@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Krita/PythonPlugin
+X-KDE-Library=comic_creator
+X-Python-2-Compatible=false
+Name=Comic Creator
+Comment=Comprehensive comic book and graphic novel creation plugin
+X-Krita-Version=5.0
