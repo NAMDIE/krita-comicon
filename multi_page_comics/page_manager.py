@@ -1,18 +1,26 @@
+from typing import Optional, Dict, Any, List
 from krita import Krita
 from .panel_system import PanelSystem
 from .template_manager import TemplateManager
 
 
 class PageManager:
-    '''Manages individual comic pages'''
+    """Manages individual comic pages."""
 
-    def __init__(self, project_settings):
+    def __init__(self, project_settings: Dict[str, Any]):
         self.settings = project_settings
         self.panel_system = PanelSystem()
         self.template_manager = TemplateManager()
 
-    def create_page(self, template_id=None):
-        '''Create new page with optional template'''
+    def create_page(self, template_id: Optional[str] = None) -> Dict[str, Any]:
+        """Create new page with optional template.
+        
+        Args:
+            template_id: Optional template ID to apply
+            
+        Returns:
+            Page data dictionary
+        """
         doc = Krita.instance().activeDocument()
 
         if not doc:
@@ -50,8 +58,22 @@ class PageManager:
 
         return page_data
 
-    def apply_template(self, doc, page_layer, template):
-        '''Apply panel template to page'''
+    def apply_template(
+        self,
+        doc,
+        page_layer,
+        template: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        """Apply panel template to page.
+        
+        Args:
+            doc: Krita document
+            page_layer: Parent page layer
+            template: Template dictionary
+            
+        Returns:
+            List of created panel data dictionaries
+        """
         panels = []
 
         for i, panel_def in enumerate(template['panels']):
@@ -65,8 +87,22 @@ class PageManager:
 
         return panels
 
-    def add_panel_to_page(self, doc, page_layer, panel_definition):
-        '''Add single panel to existing page'''
+    def add_panel_to_page(
+        self,
+        doc,
+        page_layer,
+        panel_definition: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Add single panel to existing page.
+        
+        Args:
+            doc: Krita document
+            page_layer: Parent page layer
+            panel_definition: Panel definition dictionary
+            
+        Returns:
+            Panel data dictionary
+        """
         panel_count = len([n for n in page_layer.childNodes()
                            if 'Panel' in n.name()])
         return self.panel_system.create_panel(
