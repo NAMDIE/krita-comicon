@@ -89,5 +89,4 @@ self.docker
 )
 
 
-# Register extension
-Krita.instance().addExtension(MultiPageComicsExtension(Krita.instance()))
+# The extension is registered in __init__.py
