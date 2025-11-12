@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap
 
 
-class ComicCreatorDocker(DockWidget):
+class MultiPageComicsDocker(DockWidget):
 '''Main docker panel for Comic Creator'''
 
 def __init__(self):
@@ -217,11 +217,11 @@ def refresh_project(self):
 pass
 
 
-class ComicCreatorDockerFactory(DockWidgetFactory):
-'''Factory for creating docker instances'''
+class MultiPageComicsDockerFactory(DockWidgetFactory):
+    '''Factory for creating docker instances'''
 
-def __init__(self):
-super().__init__("comic_creator_docker", "Comic Creator")
+    def __init__(self):
+        super().__init__("multi_page_comics_docker", "Multi-Page Comics")
 
-def createDockWidget(self):
-return ComicCreatorDocker()
+    def createDockWidget(self):
+        return MultiPageComicsDocker()
