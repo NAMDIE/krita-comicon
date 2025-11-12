@@ -26,20 +26,20 @@ action_new = window.createAction(
 )
         action_new.triggered.connect(lambda: self.new_project(Krita.instance().activeWindow()))
 
-# Open Comic Project
-action_open = window.createAction(
-"comic_creator_open_project",
-"Open Comic Project",
-"file"
-)
+        # Open Comic Project
+        action_open = window.createAction(
+            "comic_creator_open_project",
+            "Open Comic Project",
+            "file"
+        )
         action_open.triggered.connect(lambda: self.open_project(Krita.instance().activeWindow()))
 
-# Export Comic
-action_export = window.createAction(
-"comic_creator_export",
-"Export Comic",
-"file"
-)
+        # Export Comic
+        action_export = window.createAction(
+            "comic_creator_export",
+            "Export Comic",
+            "file"
+        )
         action_export.triggered.connect(lambda: self.export_comic(Krita.instance().activeWindow()))
 
 # Show Docker
@@ -51,34 +51,34 @@ action_docker = window.createAction(
 action_docker.triggered.connect(self.show_docker)
 
     def new_project(self, window):
-'''Create new comic project'''
-from .ui.preferences_dialog import NewProjectDialog
+        '''Create new comic project'''
+        from .ui.preferences_dialog import NewProjectDialog
         dialog = NewProjectDialog(window.qwindow())
-if dialog.exec_():
-project_data = dialog.get_project_data()
-self.project_manager.create_project(project_data)
-if self.docker:
-self.docker.refresh_project()
+        if dialog.exec_():
+            project_data = dialog.get_project_data()
+            self.project_manager.create_project(project_data)
+            if self.docker:
+                self.docker.refresh_project()
 
     def open_project(self, window):
-'''Open existing comic project'''
-from PyQt5.QtWidgets import QFileDialog
-filename, _ = QFileDialog.getOpenFileName(
+        '''Open existing comic project'''
+        from PyQt5.QtWidgets import QFileDialog
+        filename, _ = QFileDialog.getOpenFileName(
             window.qwindow(),
-"Open Comic Project",
-"",
-"Krita Documents (*.kra)"
-)
-if filename:
-self.project_manager.load_project(filename)
-if self.docker:
-self.docker.refresh_project()
+            "Open Comic Project",
+            "",
+            "Krita Documents (*.kra)"
+        )
+        if filename:
+            self.project_manager.load_project(filename)
+            if self.docker:
+                self.docker.refresh_project()
 
     def export_comic(self, window):
-'''Export comic pages'''
-from .ui.export_dialog import ExportDialog
+        '''Export comic pages'''
+        from .ui.export_dialog import ExportDialog
         dialog = ExportDialog(self.project_manager, parent=window.qwindow())
-dialog.exec_()
+        dialog.exec_()
 
 def show_docker(self):
 '''Show the main docker panel'''
