@@ -1,150 +1,240 @@
-from PyQt5.QtCore import QPointF, QRectF
-from PyQt5.QtGui import QPainterPath, QColor
+from typing import Dict, Any, Optional
+from PyQt5.QtGui import QPainterPath, QColor, QFont
+from PyQt5.QtCore import QPointF, QRectF, Qt
+import math
 
 
 class SpeechBubbleManager:
-'''Manages speech bubble creation and library'''
+    """Manages speech bubble creation and styling."""
 
-def __init__(self):
-self.bubble_presets = self.load_presets()
+    BUBBLE_STYLES = {
+        'standard': 'rectangular',
+        'thought': 'cloud',
+        'shout': 'jagged',
+        'whisper': 'rounded',
+        'radio': 'circle',
+        'narration': 'box'
+    }
 
-def load_presets(self):
-'''Load speech bubble presets'''
-return {
-'standard': {
-'name': 'Standard Speech',
-'shape': 'ellipse',
-'border_width': 2,
-'tail_style': 'curved'
-},
-'thought': {
-'name': 'Thought Bubble',
-'shape': 'cloud',
-'border_width': 2,
-'tail_style': 'bubbles'
-},
-'shout': {
-'name': 'Shout',
-'shape': 'jagged',
-'border_width': 3,
-'tail_style': 'sharp'
-},
-'whisper': {
-'name': 'Whisper',
-'shape': 'ellipse',
-'border_width': 1,
-'border_style': 'dashed',
-'tail_style': 'thin'
-},
-'radio': {
-'name': 'Radio/Electronic',
-'shape': 'rectangle',
-'border_width': 2,
-'border_style': 'zigzag',
-'tail_style': 'lightning'
-},
-'narration': {
-'name': 'Narration Box',
-'shape': 'rectangle',
-'border_width': 2,
-'tail_style': None
-}
-}
+    def __init__(self):
+        self.default_text_color = QColor(0, 0, 0)
+        self.default_bg_color = QColor(255, 255, 255)
+        self.default_border_color = QColor(0, 0, 0)
+        self.default_border_width = 3
 
-def create_bubble(self, doc, layer, bubble_type, position, size, tail_point=None):
-'''Create speech bubble on specified layer'''
-preset = self.bubble_presets.get(bubble_type, self.bubble_presets['standard'])
+    def create_bubble(
+        self,
+        doc,
+        layer,
+        bubble_data: Dict[str, Any]
+    ) -> Optional[Any]:
+        """Create speech bubble shape.
+        
+        Args:
+            doc: Krita document
+            layer: Parent layer
+            bubble_data: Bubble configuration dictionary
+            
+        Returns:
+            Bubble vector layer or None if failed
+        """
+        style = bubble_data.get('style', 'standard')
+        bounds = QRectF(
+            bubble_data.get('x', 0),
+            bubble_data.get('y', 0),
+            bubble_data.get('width', 200),
+            bubble_data.get('height', 100)
+        )
 
-# Create vector layer for bubble
-bubble_layer = doc.createVectorLayer(f"Speech Bubble - {preset['name']}")
-layer.addChildNode(bubble_layer, None)
+        # Create bubble shape
+        bubble_path = self._create_bubble_shape(style, bounds)
 
-# Create bubble shape based on preset
-path = self._create_bubble_shape(
-preset['shape'],
-position,
-size
-)
+        # Create vector layer
+        bubble_layer = doc.createVectorLayer(f"Bubble - {style}")
+        layer.addChildNode(bubble_layer, None)
 
-# Add tail if specified
-if tail_point and preset.get('tail_style'):
-tail_path = self._create_tail(
-preset['tail_style'],
-position,
-tail_point
-)
-path.addPath(tail_path)
+        # Create tail if specified
+        if bubble_data.get('tail', False):
+            tail_style = bubble_data.get('tail_style', 'curved')
+            tail_point = QPointF(
+                bubble_data.get('tail_x', bounds.center().x()),
+                bubble_data.get('tail_y', bounds.bottom() + 30)
+            )
+            self._create_tail(bubble_layer, bounds, tail_point, tail_style)
 
-# Apply to vector layer (simplified - actual implementation uses Krita vector API)
-return bubble_layer
+        return bubble_layer
 
-def _create_bubble_shape(self, shape_type, position, size):
-'''Create bubble shape path'''
-path = QPainterPath()
-rect = QRectF(position.x(), position.y(), size.width(), size.height())
+    def _create_bubble_shape(
+        self,
+        style: str,
+        bounds: QRectF
+    ) -> QPainterPath:
+        """Generate bubble shape path.
+        
+        Args:
+            style: Bubble style (standard, thought, shout, etc.)
+            bounds: Bounding rectangle
+            
+        Returns:
+            QPainterPath representing bubble shape
+        """
+        if style == 'cloud':
+            return self._create_cloud_shape(bounds)
+        elif style == 'jagged':
+            return self._create_jagged_shape(bounds)
+        elif style == 'rounded':
+            return self._create_rounded_shape(bounds)
+        else:
+            # Standard rectangular bubble
+            path = QPainterPath()
+            path.addRect(bounds)
+            return path
 
-if shape_type == 'ellipse':
-path.addEllipse(rect)
-elif shape_type == 'rectangle':
-path.addRect(rect)
-elif shape_type == 'cloud':
-# Create cloud-like shape with multiple circles
-self._create_cloud_shape(path, rect)
-elif shape_type == 'jagged':
-# Create jagged edges for shout
-self._create_jagged_shape(path, rect)
+    def _create_cloud_shape(self, bounds: QRectF) -> QPainterPath:
+        """Create cloud-shaped thought bubble.
+        
+        Args:
+            bounds: Bounding rectangle
+            
+        Returns:
+            QPainterPath for cloud shape
+        """
+        path = QPainterPath()
+        radius = min(bounds.width(), bounds.height()) / 4
+        center = bounds.center()
 
-return path
+        # Create 8-bump cloud pattern
+        bumps = 8
+        for i in range(bumps):
+            angle = (2 * math.pi * i) / bumps
+            # Bump position on circle
+            bump_x = center.x() + (bounds.width() / 2 - radius) * math.cos(angle)
+            bump_y = center.y() + (bounds.height() / 2 - radius) * math.sin(angle)
+            # Draw circular bump
+            path.addEllipse(QPointF(bump_x, bump_y), radius, radius)
 
-def _create_cloud_shape(self, path, rect):
-'''Create cloud bubble shape'''
-# Simplified cloud - multiple overlapping circles
-num_bumps = 8
-for i in range(num_bumps):
-angle = (i / num_bumps) * 360
-# Add circle bumps around perimeter
-pass
+        return path
 
-def _create_jagged_shape(self, path, rect):
-'''Create jagged/burst shape for shouts'''
-# Create star-burst pattern
-pass
+    def _create_jagged_shape(self, bounds: QRectF) -> QPainterPath:
+        """Create jagged/shout bubble with spiky edges.
+        
+        Args:
+            bounds: Bounding rectangle
+            
+        Returns:
+            QPainterPath for jagged shape
+        """
+        path = QPainterPath()
+        center = bounds.center()
+        points = []
 
-def _create_tail(self, tail_style, bubble_pos, target_pos):
-'''Create speech bubble tail'''
-path = QPainterPath()
+        # Create 16-point starburst pattern
+        points_count = 16
+        for i in range(points_count):
+            angle = (2 * math.pi * i) / points_count
+            # Alternate between inner and outer radius for jagged effect
+            if i % 2 == 0:
+                radius = max(bounds.width(), bounds.height()) / 2
+            else:
+                radius = max(bounds.width(), bounds.height()) / 3
+            
+            x = center.x() + radius * math.cos(angle)
+            y = center.y() + radius * math.sin(angle)
+            points.append(QPointF(x, y))
 
-if tail_style == 'curved':
-# Smooth curved tail
-path.moveTo(bubble_pos)
-control = QPointF(
-(bubble_pos.x() + target_pos.x()) / 2,
-bubble_pos.y()
-)
-path.quadTo(control, target_pos)
+        # Create polygon from points
+        if points:
+            path.moveTo(points[0])
+            for point in points[1:]:
+                path.lineTo(point)
+            path.closeSubpath()
 
-elif tail_style == 'sharp':
-# Angular tail for shouts
-path.moveTo(bubble_pos)
-path.lineTo(target_pos)
+        return path
 
-elif tail_style == 'bubbles':
-# Small circles for thought bubble
-for i in range(3):
-t = (i + 1) / 4
-x = bubble_pos.x() + t * (target_pos.x() - bubble_pos.x())
-y = bubble_pos.y() + t * (target_pos.y() - bubble_pos.y())
-radius = 10 - (i * 3)
-path.addEllipse(QPointF(x, y), radius, radius)
+    def _create_rounded_shape(self, bounds: QRectF) -> QPainterPath:
+        """Create rounded rectangle shape.
+        
+        Args:
+            bounds: Bounding rectangle
+            
+        Returns:
+            QPainterPath for rounded rectangle
+        """
+        path = QPainterPath()
+        radius = min(bounds.width(), bounds.height()) / 8
+        path.addRoundedRect(bounds, radius, radius)
+        return path
 
-return path
+    def _create_tail(
+        self,
+        layer,
+        bubble_bounds: QRectF,
+        tail_point: QPointF,
+        style: str = 'curved'
+    ) -> None:
+        """Create speech bubble tail.
+        
+        Args:
+            layer: Vector layer to draw on
+            bubble_bounds: Bubble bounding rectangle
+            tail_point: Point where tail points
+            style: Tail style (curved, sharp, bubble)
+        """
+        if style == 'curved':
+            # Create curved tail using quadratic bezier
+            path = QPainterPath()
+            start = bubble_bounds.bottomRight()
+            control = QPointF(
+                (start.x() + tail_point.x()) / 2,
+                (start.y() + tail_point.y()) / 2 - 20
+            )
+            path.moveTo(start)
+            path.quadTo(control, tail_point)
+            path.lineTo(bubble_bounds.bottomLeft())
+            path.closeSubpath()
 
-def add_text_to_bubble(self, doc, bubble_layer, text, font_size=12):
-'''Add text to speech bubble'''
-# Create text layer
-text_layer = doc.createVectorLayer(f"Bubble Text")
-bubble_layer.parentNode().addChildNode(text_layer, bubble_layer)
+        elif style == 'sharp':
+            # Create triangular pointed tail
+            path = QPainterPath()
+            path.moveTo(bubble_bounds.bottomRight())
+            path.lineTo(tail_point)
+            path.lineTo(bubble_bounds.bottomLeft())
+            path.closeSubpath()
 
-# Position text in center of bubble
-# Use Krita's text tool API
-return text_layer
+        elif style == 'bubble':
+            # Create circular bubble tail
+            tail_radius = 15
+            path = QPainterPath()
+            path.addEllipse(tail_point, tail_radius, tail_radius)
+
+    def add_text_to_bubble(
+        self,
+        doc,
+        bubble_layer,
+        text: str,
+        bubble_data: Dict[str, Any]
+    ) -> Optional[Any]:
+        """Add text layer to bubble.
+        
+        Args:
+            doc: Krita document
+            bubble_layer: Bubble vector layer
+            text: Text content
+            bubble_data: Bubble configuration
+            
+        Returns:
+            Text layer or None if failed
+        """
+        # Create text layer
+        text_layer = doc.createShapeLayer(f"Text - {text[:20]}")
+        bubble_layer.addChildNode(text_layer, None)
+
+        # Configure font
+        font = QFont("Arial", bubble_data.get('font_size', 18))
+        font.setBold(bubble_data.get('bold', False))
+        font.setItalic(bubble_data.get('italic', False))
+
+        # TODO: Position text in center of bubble bounds and apply proper rendering
+        # Requires Krita text tool integration
+
+        return text_layer
