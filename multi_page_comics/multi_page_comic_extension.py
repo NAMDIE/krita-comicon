@@ -1,3 +1,4 @@
+from typing import Optional
 from krita import Extension, Krita
 from PyQt5.QtWidgets import QMessageBox
 from .comic_manager import ComicProjectManager
@@ -5,19 +6,23 @@ from .ui.main_docker import ComicCreatorDocker
 
 
 class MultiPageComicsExtension(Extension):
-    '''Main Krita Comic Creator Extension'''
+    """Main Krita Comic Creator Extension."""
 
     def __init__(self, parent):
         super().__init__(parent)
         self.project_manager = ComicProjectManager()
-        self.docker = None
+        self.docker: Optional[ComicCreatorDocker] = None
 
-    def setup(self):
-        '''Initialize the extension'''
+    def setup(self) -> None:
+        """Initialize the extension."""
         pass
 
-    def createActions(self, window):
-        '''Create menu actions'''
+    def createActions(self, window) -> None:
+        """Create menu actions.
+        
+        Args:
+            window: Krita window instance
+        """
         # New Comic Project
         action_new = window.createAction(
             "comic_creator_new_project",
@@ -50,8 +55,12 @@ class MultiPageComicsExtension(Extension):
         )
         action_docker.triggered.connect(self.show_docker)
 
-    def new_project(self, window):
-        '''Create new comic project'''
+    def new_project(self, window) -> None:
+        """Create new comic project.
+        
+        Args:
+            window: Krita window instance
+        """
         from .ui.preferences_dialog import NewProjectDialog
         dialog = NewProjectDialog(window.qwindow())
         if dialog.exec_():
@@ -60,8 +69,12 @@ class MultiPageComicsExtension(Extension):
             if self.docker:
                 self.docker.refresh_project()
 
-    def open_project(self, window):
-        '''Open existing comic project'''
+    def open_project(self, window) -> None:
+        """Open existing comic project.
+        
+        Args:
+            window: Krita window instance
+        """
         from PyQt5.QtWidgets import QFileDialog
         filename, _ = QFileDialog.getOpenFileName(
             window.qwindow(),
@@ -74,14 +87,18 @@ class MultiPageComicsExtension(Extension):
             if self.docker:
                 self.docker.refresh_project()
 
-    def export_comic(self, window):
-        '''Export comic pages'''
+    def export_comic(self, window) -> None:
+        """Export comic pages.
+        
+        Args:
+            window: Krita window instance
+        """
         from .ui.export_dialog import ExportDialog
         dialog = ExportDialog(self.project_manager, parent=window.qwindow())
         dialog.exec_()
 
-    def show_docker(self):
-        '''Show the main docker panel'''
+    def show_docker(self) -> None:
+        """Show the main docker panel."""
         if not self.docker:
             self.docker = ComicCreatorDocker()
             Krita.instance().addDockWidgetFactory(
