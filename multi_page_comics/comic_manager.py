@@ -74,7 +74,7 @@ return False
 doc = Krita.instance().activeDocument()
 if doc:
 project_json = json.dumps(self.current_project, indent=2)
-doc.setAnnotation("ComicCreatorProject",
+doc.setAnnotation("MultiPageComicsProject",
 project_json,
 "application/json")
 doc.save()
@@ -86,7 +86,7 @@ def load_project(self, filename):
 doc = Krita.instance().openDocument(filename)
 if doc:
 Krita.instance().activeWindow().addView(doc)
-annotation = doc.annotation("ComicCreatorProject")
+annotation = doc.annotation("MultiPageComicsProject")
 if annotation:
 self.current_project = json.loads(annotation)
 self.project_file = filename

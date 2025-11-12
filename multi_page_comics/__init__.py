@@ -1,4 +1,4 @@
-from .comic_creator import ComicCreator
+from .multi_page_comic_extension import MultiPageComicsExtension
 
 # Krita extension entry point
-Krita.instance().addExtension(ComicCreator(Krita.instance()))
+# The extension is registered in the main file

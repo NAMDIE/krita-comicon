@@ -4,8 +4,8 @@ from .comic_manager import ComicProjectManager
 from .ui.main_docker import ComicCreatorDocker
 
 
-class ComicCreator(Extension):
-'''Main Krita Comic Creator Extension'''
+class MultiPageComicsExtension(Extension):
+    '''Main Krita Comic Creator Extension'''
 
 def __init__(self, parent):
 super().__init__(parent)
@@ -90,4 +90,4 @@ self.docker
 
 
 # Register extension
-Krita.instance().addExtension(ComicCreator(Krita.instance()))
+Krita.instance().addExtension(MultiPageComicsExtension(Krita.instance()))
