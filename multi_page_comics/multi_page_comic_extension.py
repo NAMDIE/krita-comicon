@@ -7,23 +7,23 @@ from .ui.main_docker import ComicCreatorDocker
 class MultiPageComicsExtension(Extension):
     '''Main Krita Comic Creator Extension'''
 
-def __init__(self, parent):
-super().__init__(parent)
-self.project_manager = ComicProjectManager()
-self.docker = None
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.project_manager = ComicProjectManager()
+        self.docker = None
 
-def setup(self):
-'''Initialize the extension'''
-pass
+    def setup(self):
+        '''Initialize the extension'''
+        pass
 
-def createActions(self, window):
-'''Create menu actions'''
-# New Comic Project
-action_new = window.createAction(
-"comic_creator_new_project",
-"New Comic Project",
-"file"
-)
+    def createActions(self, window):
+        '''Create menu actions'''
+        # New Comic Project
+        action_new = window.createAction(
+            "comic_creator_new_project",
+            "New Comic Project",
+            "file"
+        )
         action_new.triggered.connect(lambda: self.new_project(Krita.instance().activeWindow()))
 
         # Open Comic Project
@@ -42,13 +42,13 @@ action_new = window.createAction(
         )
         action_export.triggered.connect(lambda: self.export_comic(Krita.instance().activeWindow()))
 
-# Show Docker
-action_docker = window.createAction(
-"comic_creator_show_docker",
-"Comic Creator",
-"settings/dockers"
-)
-action_docker.triggered.connect(self.show_docker)
+        # Show Docker
+        action_docker = window.createAction(
+            "comic_creator_show_docker",
+            "Comic Creator",
+            "settings/dockers"
+        )
+        action_docker.triggered.connect(self.show_docker)
 
     def new_project(self, window):
         '''Create new comic project'''
@@ -80,13 +80,13 @@ action_docker.triggered.connect(self.show_docker)
         dialog = ExportDialog(self.project_manager, parent=window.qwindow())
         dialog.exec_()
 
-def show_docker(self):
-'''Show the main docker panel'''
-if not self.docker:
-self.docker = ComicCreatorDocker()
-Krita.instance().addDockWidgetFactory(
-self.docker
-)
+    def show_docker(self):
+        '''Show the main docker panel'''
+        if not self.docker:
+            self.docker = ComicCreatorDocker()
+            Krita.instance().addDockWidgetFactory(
+                self.docker
+            )
 
 
 # The extension is registered in __init__.py
