@@ -4,7 +4,7 @@ from krita import Krita
 
 
 class ComicProjectManager:
-'''Manages comic project data and state'''
+    '''Manages comic project data and state'''
 
 def __init__(self):
 self.current_project = None
