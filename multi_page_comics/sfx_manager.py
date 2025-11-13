@@ -99,7 +99,6 @@ class SFXManager:
             Dictionary of SFX in category
         """
         return self.sfx_library.get(category, {})
-
     def add_custom_sfx(
         self,
         category: str,
@@ -107,7 +106,7 @@ class SFXManager:
         properties: Dict[str, Any]
     ) -> None:
         """Add custom SFX to library.
-        
+
         Args:
             category: SFX category
             text: SFX text

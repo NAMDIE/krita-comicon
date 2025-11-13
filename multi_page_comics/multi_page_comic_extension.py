@@ -2,7 +2,7 @@ from typing import Optional
 from krita import Extension, Krita
 from PyQt5.QtWidgets import QMessageBox
 from .comic_manager import ComicProjectManager
-from .ui.main_docker import ComicCreatorDocker
+from .ui.main_docker import MultiPageComicsDockerFactory
 
 
 class MultiPageComicsExtension(Extension):
@@ -11,7 +11,7 @@ class MultiPageComicsExtension(Extension):
     def __init__(self, parent):
         super().__init__(parent)
         self.project_manager = ComicProjectManager()
-        self.docker: Optional[ComicCreatorDocker] = None
+        self.docker_factory = None
 
     def setup(self) -> None:
         """Initialize the extension."""
@@ -99,11 +99,10 @@ class MultiPageComicsExtension(Extension):
 
     def show_docker(self) -> None:
         """Show the main docker panel."""
-        if not self.docker:
-            self.docker = ComicCreatorDocker()
-            Krita.instance().addDockWidgetFactory(
-                self.docker
-            )
+        # Register and add the docker factory to Krita
+        if not self.docker_factory:
+            self.docker_factory = MultiPageComicsDockerFactory()
+            Krita.instance().addDockWidgetFactory(self.docker_factory)
 
 
 # The extension is registered in __init__.py

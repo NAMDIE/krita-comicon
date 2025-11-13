@@ -243,6 +243,5 @@ class ExportManager:
 
 class InfoObject:
     """Helper class for Krita export."""
-
     def __init__(self):
         self.properties = {}

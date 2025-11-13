@@ -14,35 +14,18 @@ def rect_from_percentages(
     """Convert percentage-based coordinates to pixel coordinates.
     
     Args:
-        page_width: Page width in pixels
-        page_height: Page height in pixels
-        x_pct: X percentage
-        y_pct: Y percentage
-        w_pct: Width percentage
-        h_pct: Height percentage
-        
-    Returns:
-        QRectF with pixel coordinates
-    """
-    return QRectF(
-        x_pct * page_width / 100,
-        y_pct * page_height / 100,
-        w_pct * page_width / 100,
-        h_pct * page_height / 100
-    )
+def rect_contains_rect(outer: QRectF, inner: QRectF) -> bool:
+    """Check if outer rectangle contains inner rectangle.
 
-
-def calculate_tail_point(
-    bubble_center: QPointF,
-    target_point: QPointF,
-    distance: float = 50
-) -> QPointF:
-    """Calculate speech bubble tail attachment point.
-    
     Args:
-        bubble_center: Center of speech bubble
-        target_point: Target point for tail
-        distance: Distance from bubble center
+        outer: Outer rectangle
+        inner: Inner rectangle
+
+    Returns:
+        True if outer contains inner
+    """
+    return (outer.contains(inner.topLeft()) and
+            outer.contains(inner.bottomRight()))
         
     Returns:
         QPointF for tail attachment
