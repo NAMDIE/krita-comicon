@@ -2,7 +2,7 @@ from typing import Optional
 from krita import Extension, Krita
 from PyQt5.QtWidgets import QMessageBox
 from .comic_manager import ComicProjectManager
-from .ui.main_docker import MultiPageComicsDockerFactory
+from .ui.main_docker import MultiPageComicsDockerFactory, MultiPageComicsDocker
 
 
 class MultiPageComicsExtension(Extension):
@@ -15,7 +15,10 @@ class MultiPageComicsExtension(Extension):
 
     def setup(self) -> None:
         """Initialize the extension."""
-        pass
+        # Register and add the docker factory to Krita
+        if not self.docker_factory:
+            self.docker_factory = MultiPageComicsDockerFactory()
+            Krita.instance().addDockWidgetFactory(self.docker_factory)
 
     def createActions(self, window) -> None:
         """Create menu actions.
@@ -66,8 +69,9 @@ class MultiPageComicsExtension(Extension):
         if dialog.exec_():
             project_data = dialog.get_project_data()
             self.project_manager.create_project(project_data)
-            if self.docker:
-                self.docker.refresh_project()
+            docker = self._get_docker()
+            if docker and docker.isVisible():
+                docker.refresh_project()
 
     def open_project(self, window) -> None:
         """Open existing comic project.
@@ -84,8 +88,9 @@ class MultiPageComicsExtension(Extension):
         )
         if filename:
             self.project_manager.load_project(filename)
-            if self.docker:
-                self.docker.refresh_project()
+            docker = self._get_docker()
+            if docker and docker.isVisible():
+                docker.refresh_project()
 
     def export_comic(self, window) -> None:
         """Export comic pages.
@@ -97,12 +102,20 @@ class MultiPageComicsExtension(Extension):
         dialog = ExportDialog(self.project_manager, parent=window.qwindow())
         dialog.exec_()
 
+    def _get_docker(self) -> Optional["MultiPageComicsDocker"]:
+        """Get the docker instance if it exists.
+
+        Returns:
+            The docker instance or None
+        """
+        for widget in Krita.instance().dockers():
+            if widget.objectName() == "multi_page_comics_docker":
+                return widget
+        return None
+
     def show_docker(self) -> None:
         """Show the main docker panel."""
-        # Register and add the docker factory to Krita
-        if not self.docker_factory:
-            self.docker_factory = MultiPageComicsDockerFactory()
-            Krita.instance().addDockWidgetFactory(self.docker_factory)
+        Krita.instance().action("docker_multi_page_comics_docker").trigger()
 
 
 # The extension is registered in __init__.py
