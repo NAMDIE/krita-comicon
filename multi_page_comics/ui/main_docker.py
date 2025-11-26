@@ -1,4 +1,3 @@
-bubbles_group.setLayout(bubbles_layout)
 from krita import DockWidget, DockWidgetFactory, Krita
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTabWidget,
