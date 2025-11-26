@@ -50,13 +50,6 @@ class MultiPageComicsExtension(Extension):
         )
         action_export.triggered.connect(lambda: self.export_comic(Krita.instance().activeWindow()))
 
-        # Show Docker
-        action_docker = window.createAction(
-            "comic_creator_show_docker",
-            "Comic Creator",
-            "settings/dockers"
-        )
-        action_docker.triggered.connect(self.show_docker)
 
     def new_project(self, window) -> None:
         """Create new comic project.
@@ -113,9 +106,6 @@ class MultiPageComicsExtension(Extension):
                 return widget
         return None
 
-    def show_docker(self) -> None:
-        """Show the main docker panel."""
-        Krita.instance().action("docker_multi_page_comics_docker").trigger()
 
 
 # The extension is registered in __init__.py

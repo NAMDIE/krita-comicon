@@ -223,7 +223,7 @@ class MultiPageComicsDockerFactory(DockWidgetFactory):
     """Factory for creating docker instances"""
 
     def __init__(self):
-        super().__init__("multi_page_comics_docker", "Multi-Page Comics")
+        super().__init__("multi_page_comics_docker", "Multi-Page Comics", MultiPageComicsDocker)
 
     def createDockWidget(self):
         return MultiPageComicsDocker()
