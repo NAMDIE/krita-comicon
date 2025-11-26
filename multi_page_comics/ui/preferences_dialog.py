@@ -45,8 +45,8 @@ class NewProjectDialog(QDialog):
 
 		self.format_combo = QComboBox()
 		self.format_combo.addItems([
-			'US Standard (6.625" × 10.25")',
-			'Manga B6 (128mm × 182mm)',
+			'US Standard (6.625" x 10.25")',
+			'Manga B6 (128mm x 182mm)',
 			'European A4',
 			'Webcomic (800px wide)',
 			'Custom'
