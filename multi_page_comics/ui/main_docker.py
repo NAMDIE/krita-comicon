@@ -85,7 +85,7 @@ class MultiPageComicsDocker(DockWidget):
 
         # Add template buttons (would be populated dynamically)
         templates = [
-            "2×3 Grid", "3×2 Grid", "Splash", "Hero Moment",
+            "2x3 Grid", "3x2 Grid", "Splash", "Hero Moment",
             "4-Panel Strip", "L-Shape", "Diagonal", "Custom"
         ]
 

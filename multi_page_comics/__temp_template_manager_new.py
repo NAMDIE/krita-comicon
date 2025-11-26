@@ -19,7 +19,7 @@ class TemplateManager:
         # Standard grids
         self.templates['2x3-standard'] = {
             'id': '2x3-standard',
-            'name': '2×3 Standard Grid',
+            'name': '2x3 Standard Grid',
             'category': 'standard',
             'region': 'western',
             'panels': [
@@ -34,7 +34,7 @@ class TemplateManager:
 
         self.templates['3x2-standard'] = {
             'id': '3x2-standard',
-            'name': '3×2 Standard Grid',
+            'name': '3x2 Standard Grid',
             'category': 'standard',
             'region': 'western',
             'panels': [
